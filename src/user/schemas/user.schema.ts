@@ -11,7 +11,7 @@ import {
 import { Document, SchemaTypes } from 'mongoose';
 
 import { Url } from 'src/url/schemas/url.schema';
-import { safePassword } from 'src/utils/safe-password.utils';
+import { safePassword } from 'src/common/utils';
 
 @Schema()
 export class User extends Document {

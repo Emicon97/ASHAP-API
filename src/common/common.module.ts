@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { KeyGeneratorService } from './key-generator.service';
+import { KeyService } from './key.service';
+import { UrlMongooseModule } from 'src/url/schemas/url.schema';
 
 @Module({
-  providers: [KeyGeneratorService],
+  imports: [UrlMongooseModule],
+  providers: [KeyService],
 })
 export class CommonModule {}

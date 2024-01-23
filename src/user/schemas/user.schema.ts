@@ -31,7 +31,7 @@ export class User extends Document {
   @IsArray()
   @ValidateNested()
   @IsMongoId()
-  @Prop({ type: SchemaTypes.ObjectId })
+  @Prop({ type: [{ type: SchemaTypes.ObjectId, ref: 'Url' }] })
   urls: Url[];
 
   @Prop({ select: false })

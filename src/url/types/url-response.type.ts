@@ -1,5 +1,5 @@
 import { Url } from '../schemas/url.schema';
 
-export type UrlResponse = Pick<Required<Url>, 'shortLink' | '_id'> & {
+export type UrlResponse = Pick<Required<Url>, 'shortLink' | 'id'> & {
   created?: boolean;
 };

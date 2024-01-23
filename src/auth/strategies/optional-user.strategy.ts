@@ -1,22 +1,15 @@
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Model } from 'mongoose';
 
-import { JwtPayload } from '../types/jwt-payload.type';
+import { JwtPayload } from '../types';
 import { User } from 'src/user/schemas/user.schema';
 
 @Injectable()
-export class OptionalJwtStrategy extends PassportStrategy(
-  Strategy,
-  'optional-user',
-) {
+export class OptionalJwtStrategy extends PassportStrategy(Strategy, 'optional-user') {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     configService: ConfigService,

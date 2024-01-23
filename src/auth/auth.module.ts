@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
-import { ConfigModule } from '@nestjs/config';
-import { JwtStrategy, OptionalJwtStrategy } from './strategies';
+import { JwtStrategy, OptionalJwtStrategy, RefreshTokenStrategy } from './strategies';
+import { RefreshMongooseModule } from './schemas/refresh.schema';
+import { RefreshService } from './refresh.service';
 
 @Module({
   imports: [
@@ -17,14 +19,21 @@ import { JwtStrategy, OptionalJwtStrategy } from './strategies';
       useFactory: () => {
         return {
           secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: '2h' },
+          signOptions: { expiresIn: '30s' },
         };
       },
     }),
+    RefreshMongooseModule,
     UserModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, OptionalJwtStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    RefreshTokenStrategy,
+    OptionalJwtStrategy,
+    RefreshService,
+  ],
   exports: [JwtStrategy, OptionalJwtStrategy, PassportModule, JwtModule],
 })
 export class AuthModule {}

@@ -1,21 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { JwtPayload } from './types/jwt-payload.type';
 import { JwtService } from '@nestjs/jwt';
+import { v4 as uuid } from 'uuid';
+import * as bcrypt from 'bcrypt';
+
+import { JwtPayload } from './types';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  hashPassword(password: string) {
-    return bcrypt.hashSync(password, 10);
+  generateId() {
+    return uuid();
   }
 
-  comparePasswords(password: string, encrypted: string) {
+  hash(code: string) {
+    return bcrypt.hashSync(code, 10);
+  }
+
+  compare(password: string, encrypted: string) {
     return bcrypt.compare(password, encrypted);
   }
 
-  getToken(payload: JwtPayload) {
+  generatetAccessToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
 }

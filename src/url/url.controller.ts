@@ -3,22 +3,22 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Redirect,
   NotFoundException,
   BadRequestException,
-  UseGuards,
+  InternalServerErrorException,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
+
 import { UrlService } from './url.service';
 import { CreateUrlDto } from './dto/create-url.dto';
-import { UpdateUrlDto } from './dto/update-url.dto';
 import { KeyService } from 'src/common/key.service';
-import { OptionalUserGuard } from 'src/auth/guard/optional-user.guard';
-import { UrlInterceptor } from './url.interceptor';
 import { UrlResponse } from './types/url-response.type';
+import { UrlInterceptor } from './interceptors/url.interceptor';
+import { OptionalUserGuard } from 'src/auth/guards/optional-user.guard';
 
 @Controller()
 export class UrlController {
@@ -31,17 +31,22 @@ export class UrlController {
   @UseGuards(OptionalUserGuard)
   @Post('url')
   async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponse> {
-    const exists = await this.urlService.findOne(createUrlDto);
-    if (createUrlDto.custom && exists) throw new BadRequestException();
-    if (exists) {
-      const { _id, shortLink } = exists;
+    try {
+      const exists = await this.urlService.findOne(createUrlDto);
+      if (createUrlDto.custom && exists) throw new BadRequestException();
+      if (exists) {
+        const { id, shortLink } = exists;
 
-      return { _id, shortLink, created: false };
+        return { id, shortLink, created: false };
+      }
+
+      const hash = await this.keyService.generate();
+
+      return await this.urlService.create(createUrlDto, hash);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException();
     }
-
-    const hash = await this.keyService.generate();
-
-    return await this.urlService.create(createUrlDto, hash);
   }
 
   @Get()
@@ -58,11 +63,6 @@ export class UrlController {
     } catch (error) {
       if (error instanceof TypeError) throw new NotFoundException();
     }
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUrlDto: UpdateUrlDto) {
-    return this.urlService.update(+id, updateUrlDto);
   }
 
   @Delete(':id')

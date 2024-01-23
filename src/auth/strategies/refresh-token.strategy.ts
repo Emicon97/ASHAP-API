@@ -5,23 +5,23 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Model } from 'mongoose';
 
-import { JwtPayload } from '../types';
+import { RefreshPayload } from '../types';
 import { User } from 'src/user/schemas/user.schema';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh') {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     configService: ConfigService,
   ) {
     super({
-      secretOrKey: configService.get('JWT_SECRET'),
+      secretOrKey: configService.get('REFRESH_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
 
-  async validate(payload: JwtPayload): Promise<User> {
-    const { id } = payload;
+  async validate(payload: RefreshPayload): Promise<RefreshPayload> {
+    const { id, key } = payload;
 
     const user = await this.userModel.findById(id);
 
@@ -31,6 +31,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         'You are trying to log in with a user that is not currently active.',
       );
 
-    return user;
+    return { id: user._id, key };
   }
 }

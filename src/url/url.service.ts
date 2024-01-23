@@ -1,10 +1,10 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
-import { CreateUrlDto } from './dto/create-url.dto';
-import { UpdateUrlDto } from './dto/update-url.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Url } from './schemas/url.schema';
-import { FilterQuery, Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model } from 'mongoose';
+
+import { CreateUrlDto } from './dto/create-url.dto';
+import { Url } from './schemas/url.schema';
 import { UrlResponse } from './types/url-response.type';
 
 @Injectable()
@@ -18,21 +18,18 @@ export class UrlService {
     this.url = this.configService.get<string>('ASHAP');
   }
 
-  async create(
-    { longLink, custom }: CreateUrlDto,
-    hash: string,
-  ): Promise<UrlResponse> {
+  async create({ longLink, custom }: CreateUrlDto, hash: string): Promise<UrlResponse> {
     const shortLink = new URL(`${custom || ''}/${hash}`, this.url);
 
     try {
-      const { _id } = await this.urlModel.create({
+      const { id } = await this.urlModel.create({
         longLink,
         shortLink: shortLink.toString(),
         key: hash,
         ...(custom && { custom }),
       });
 
-      return { _id, shortLink: shortLink.toString() };
+      return { id, shortLink: shortLink.toString() };
     } catch (error) {
       throw new BadGatewayException();
     }
@@ -50,10 +47,6 @@ export class UrlService {
     } catch (error) {
       throw new BadGatewayException();
     }
-  }
-
-  update(id: number, updateUrlDto: UpdateUrlDto) {
-    return `This action updates a #${id} url`;
   }
 
   remove(id: number) {

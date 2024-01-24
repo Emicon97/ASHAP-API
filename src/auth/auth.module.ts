@@ -19,7 +19,7 @@ import { RefreshService } from './refresh.service';
       useFactory: () => {
         return {
           secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: '30s' },
+          signOptions: { expiresIn: '5m' },
         };
       },
     }),

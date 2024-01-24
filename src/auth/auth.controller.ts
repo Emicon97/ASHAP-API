@@ -6,21 +6,25 @@ import {
   UnauthorizedException,
   UseInterceptors,
   UseGuards,
+  Req,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthInterceptor } from './interceptors';
 import { JwtPayload, RefreshPayload, TokenResponse } from './types';
 import { RefreshGuard } from './guards/refresh.guard';
-import { RefreshService } from './refresh.service';
+import { RefreshService } from './services/refresh.service';
 import { GetRefresh } from './decorators';
+import { Request } from 'express';
+import { BlacklistedService } from './services';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly refreshService: RefreshService,
+    private readonly blacklistedService: BlacklistedService,
     private readonly userService: UserService,
   ) {}
 
@@ -77,6 +81,17 @@ export class AuthController {
     };
 
     return { ...user, ...tokens };
+  }
+
+  @UseGuards(RefreshGuard)
+  @UseInterceptors(AuthInterceptor)
+  @Post('logout')
+  async logout(@Req() req: Request, @GetRefresh() refresh: RefreshPayload) {
+    const { authorization } = req.headers;
+    await this.refreshService.handleRefreshToken(refresh);
+    await this.blacklistedService.destroyAccessToken(authorization);
+
+    return 'Ok.';
   }
 
   @UseGuards(RefreshGuard)

@@ -3,12 +3,11 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 
-import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { AuthService, BlacklistedService, RefreshService } from './services';
 import { UserModule } from 'src/user/user.module';
 import { JwtStrategy, OptionalJwtStrategy, RefreshTokenStrategy } from './strategies';
-import { RefreshMongooseModule } from './schemas/refresh.schema';
-import { RefreshService } from './refresh.service';
+import { BlacklistedMongooseModule, RefreshMongooseModule } from './schemas';
 
 @Module({
   imports: [
@@ -23,6 +22,7 @@ import { RefreshService } from './refresh.service';
         };
       },
     }),
+    BlacklistedMongooseModule,
     RefreshMongooseModule,
     UserModule,
   ],
@@ -32,8 +32,15 @@ import { RefreshService } from './refresh.service';
     JwtStrategy,
     RefreshTokenStrategy,
     OptionalJwtStrategy,
+    BlacklistedService,
     RefreshService,
   ],
-  exports: [JwtStrategy, OptionalJwtStrategy, PassportModule, JwtModule],
+  exports: [
+    JwtStrategy,
+    OptionalJwtStrategy,
+    PassportModule,
+    JwtModule,
+    BlacklistedService,
+  ],
 })
 export class AuthModule {}

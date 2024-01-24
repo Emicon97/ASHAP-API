@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 
-import { CreateRefreshToken, JwtPayload, RefreshPayload } from './types';
-import { Refresh } from './schemas/refresh.schema';
+import { CreateRefreshToken, JwtPayload, RefreshPayload } from '../types';
+import { Refresh } from '../schemas';
 import { AuthService } from './auth.service';
 
 @Injectable()
@@ -41,7 +41,6 @@ export class RefreshService {
     return refresh;
   }
 
-  // async handleRefreshToken(token: string): Promise<TokenResponse> {
   async handleRefreshToken({ id, key }: RefreshPayload) {
     const error = new NotFoundException('Could not revalidate session.');
     const userTokens = await this.findRefreshTokens(id);

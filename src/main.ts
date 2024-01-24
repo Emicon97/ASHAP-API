@@ -15,9 +15,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const PORT = configService.get<string>('PORT');
+  const FRONTEND = configService.get<string>('FRONTEND');
 
   app.useGlobalPipes(new ValidationPipe(validationOptions));
-  app.enableCors({ origin: 'http://localhost:3000', credentials: true });
+  app.enableCors({ origin: FRONTEND, credentials: true });
   app.use(cookieParser());
 
   await app.listen(PORT);

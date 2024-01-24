@@ -31,6 +31,7 @@ export class UrlService {
 
       return { id, shortLink: shortLink.toString() };
     } catch (error) {
+      console.error(error);
       throw new BadGatewayException();
     }
   }

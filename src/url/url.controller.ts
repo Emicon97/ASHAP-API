@@ -7,7 +7,6 @@ import {
   Delete,
   Redirect,
   NotFoundException,
-  BadRequestException,
   InternalServerErrorException,
   UseInterceptors,
   UseGuards,
@@ -33,7 +32,6 @@ export class UrlController {
   async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponse> {
     try {
       const exists = await this.urlService.findOne(createUrlDto);
-      if (createUrlDto.custom && exists) throw new BadRequestException();
       if (exists) {
         const { id, shortLink } = exists;
 

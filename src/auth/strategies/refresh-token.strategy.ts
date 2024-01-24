@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Model } from 'mongoose';
+import { Request } from 'express';
 
 import { RefreshPayload } from '../types';
 import { User } from 'src/user/schemas/user.schema';
@@ -16,8 +17,17 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh') 
   ) {
     super({
       secretOrKey: configService.get('REFRESH_SECRET'),
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        RefreshTokenStrategy.extractJWT,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
     });
+  }
+  private static extractJWT(req: Request): string | null {
+    if (req.cookies && 'refresh' in req.cookies && req.cookies.refresh.length > 0) {
+      return req.cookies.refresh;
+    }
+    return null;
   }
 
   async validate(payload: RefreshPayload): Promise<RefreshPayload> {

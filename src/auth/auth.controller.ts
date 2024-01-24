@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   UnauthorizedException,
@@ -24,7 +25,7 @@ export class AuthController {
   ) {}
 
   @UseInterceptors(AuthInterceptor)
-  @Post('register')
+  @Post('signup')
   async signup(@Body() createAuthDto: CreateUserDto) {
     if (createAuthDto.password) {
       createAuthDto.password = this.authService.hash(createAuthDto.password);
@@ -80,7 +81,7 @@ export class AuthController {
 
   @UseGuards(RefreshGuard)
   @UseInterceptors(AuthInterceptor)
-  @Post('refresh')
+  @Get('refresh')
   async handleRefreshToken(@GetRefresh() refresh: RefreshPayload) {
     await this.refreshService.handleRefreshToken(refresh);
 

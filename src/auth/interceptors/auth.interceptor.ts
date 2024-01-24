@@ -14,10 +14,13 @@ export class AuthInterceptor implements NestInterceptor {
       map(async (data: AuthResponse) => {
         const res = context.switchToHttp().getResponse();
 
-        res.header('Authorization', `Bearer ${data.accessToken}`);
-        res.header('refresh', `Bearer ${data.refreshToken}`);
+        res.cookie('refresh', data.refreshToken, {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None',
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+        });
 
-        delete data.accessToken;
         delete data.refreshToken;
         return data;
       }),

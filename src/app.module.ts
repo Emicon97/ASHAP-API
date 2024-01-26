@@ -1,16 +1,17 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
 import { CommonModule } from './common/common.module';
-import { UrlModule } from './url/url.module';
 import { AuthModule } from './auth/auth.module';
+import { UrlModule } from './url/url.module';
 import { UserModule } from './user/user.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
-import { checkBlacklistedMiddleware } from './common/middleware/check-blacklisted.middleware';
+import { checkBlacklistedMiddleware } from './auth/middleware/check-blacklisted.middleware';
 
 @Module({
   imports: [

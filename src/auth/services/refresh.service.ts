@@ -4,9 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 
-import { CreateRefreshToken, JwtPayload, RefreshPayload } from '../types';
+import { CreateRefreshToken, JwtPayload, RefreshPayload, RefreshToken } from '../types';
 import { Refresh } from '../schemas';
 import { AuthService } from './auth.service';
+import refreshExpiration from '../config/refresh-expiration';
 
 @Injectable()
 export class RefreshService {
@@ -25,14 +26,21 @@ export class RefreshService {
     };
 
     const refresh = this.jwtService.sign(refreshPayload, {
-      expiresIn: '7d',
+      expiresIn: refreshExpiration.asString,
       secret: this.configService.get<string>('REFRESH_SECRET'),
     });
 
     try {
-      const token = refreshPayload.key;
-      if (newUser) await this.createRefreshToken({ userId: payload.id, token });
-      else await this.updateRefreshToken({ userId: payload.id, token });
+      const newRefreshToken: CreateRefreshToken = {
+        userId: payload.id,
+        token: {
+          name: refreshPayload.key,
+          expiration: Date.now() + refreshExpiration.asNumber,
+        },
+      };
+
+      if (newUser) await this.createRefreshToken(newRefreshToken);
+      else await this.updateRefreshToken(newRefreshToken);
     } catch (error) {
       console.error('Authentication error ', error);
       throw new BadGatewayException();
@@ -46,17 +54,17 @@ export class RefreshService {
     const userTokens = await this.findRefreshTokens(id);
     if (!userTokens) throw error;
 
-    const validToken: string[] = [];
-    const invalidTokens: string[] = [];
+    const deprecatedToken: RefreshToken[] = [];
+    const validTokens: RefreshToken[] = [];
 
     userTokens.token.forEach((refresh) => {
-      if (key === refresh) validToken.push(refresh);
-      else invalidTokens.push(refresh);
+      if (key === refresh.name) deprecatedToken.push(refresh);
+      else if (refresh.expiration > Date.now()) validTokens.push(refresh);
     });
 
-    if (!validToken.length) throw error;
+    if (!deprecatedToken.length) throw error;
 
-    await userTokens.updateOne({ token: invalidTokens });
+    await userTokens.updateOne({ token: validTokens });
   }
 
   private async createRefreshToken(refresh: CreateRefreshToken) {

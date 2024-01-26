@@ -1,10 +1,11 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { RefreshToken } from '../types';
 
 @Schema()
 export class Refresh extends Document {
   @Prop()
-  token: string[];
+  token: RefreshToken[];
 
   @Prop({ unique: true, index: true })
   userId: string;

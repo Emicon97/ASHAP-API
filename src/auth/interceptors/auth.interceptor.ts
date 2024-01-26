@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import { AuthResponse } from '../types';
+import refreshExpiration from '../config/refresh-expiration';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
@@ -18,7 +19,7 @@ export class AuthInterceptor implements NestInterceptor {
           httpOnly: true,
           secure: true,
           sameSite: 'None',
-          maxAge: 1000 * 60 * 60 * 24 * 7,
+          maxAge: refreshExpiration.asNumber,
         });
 
         delete data.refreshToken;

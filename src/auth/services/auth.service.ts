@@ -24,4 +24,12 @@ export class AuthService {
   generatetAccessToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
   }
+
+  verifyAccessToken(token: string) {
+    try {
+      return this.jwtService.verify(token);
+    } catch (error) {
+      if (!error.expiredAt) console.error(error);
+    }
+  }
 }

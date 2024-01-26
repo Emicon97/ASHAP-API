@@ -6,5 +6,3 @@ const refreshExpiration = {
 } as const satisfies RefreshExpiration;
 
 export default refreshExpiration;
-
-refreshExpiration.asString;

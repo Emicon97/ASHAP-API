@@ -1,8 +1,10 @@
 type RefreshExpiration = { asString: string; asNumber: number };
 
-const refreshExpiration: RefreshExpiration = {
+const refreshExpiration = {
   asString: '7d',
   asNumber: 1000 * 60 * 60 * 24 * 7,
-} as const;
+} as const satisfies RefreshExpiration;
 
 export default refreshExpiration;
+
+refreshExpiration.asString;

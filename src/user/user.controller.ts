@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { UserService } from './user.service';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
+import { UserService } from './user.service';
 import { UserQueriesDto } from './dto/user-queries.dto';
 
 @Controller('user')
@@ -18,6 +19,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @UseGuards(AuthGuard())
   @Get(':id')
   findOne(@Param('id') _id: string, @Body() userQueries: UserQueriesDto) {
     return this.userService.findOne({ _id }, userQueries);

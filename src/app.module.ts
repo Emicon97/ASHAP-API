@@ -66,7 +66,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(checkBlacklistedMiddleware)
-      .exclude('auth/login', 'auth/register')
-      .forRoutes('*');
+      .exclude('*')
+      .forRoutes('auth/logout', 'auth/refresh', 'url', 'user');
   }
 }

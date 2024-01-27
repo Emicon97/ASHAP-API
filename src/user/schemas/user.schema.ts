@@ -3,15 +3,13 @@ import {
   IsArray,
   IsBoolean,
   IsEmail,
-  IsMongoId,
   IsOptional,
   Matches,
   ValidateNested,
 } from 'class-validator';
 import { Document, SchemaTypes } from 'mongoose';
-
-import { Url } from 'src/url/schemas/url.schema';
 import { safePassword } from 'src/common/utils';
+import { UrlData } from '../types';
 
 @Schema()
 export class User extends Document {
@@ -30,15 +28,17 @@ export class User extends Document {
 
   @IsArray()
   @ValidateNested()
-  @IsMongoId()
-  @Prop({ type: [{ type: SchemaTypes.ObjectId, ref: 'Url' }] })
-  urls: Url[];
+  @Prop({
+    type: [{ name: String, url: { type: SchemaTypes.ObjectId, ref: 'Url' } }],
+    _id: false,
+  })
+  urls: UrlData[];
 
   @Prop({ select: false })
   __v?: number;
 }
 
-const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);
 
 export const UserMongooseModule = MongooseModule.forFeature([
   {

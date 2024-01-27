@@ -1,10 +1,16 @@
-import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ObjectId } from 'mongoose';
 
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 import { User } from './schemas/user.schema';
-import { QueryFunctions } from 'src/common/types/query-functions.type';
+import { QueryFunctions } from 'src/common/types';
+import { UrlData } from './types';
 
 @Injectable()
 export class UserService {
@@ -40,10 +46,13 @@ export class UserService {
       if (error.path)
         throw new BadRequestException(`Property ${error.path} does not exist.`);
       console.error(error);
+      throw new NotFoundException(
+        'Something went wrong when attempting to find the data.',
+      );
     }
   }
 
-  async addUrl(user: User, url: ObjectId) {
+  async addUrl(user: User, url: ObjectId | UrlData) {
     await user.updateOne({ $addToSet: { urls: url } }, { new: true });
   }
 

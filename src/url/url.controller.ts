@@ -31,6 +31,7 @@ export class UrlController {
   @Post('url')
   async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponse> {
     try {
+      delete createUrlDto.name;
       const exists = await this.urlService.findOne(createUrlDto);
       if (exists) {
         const { id, shortLink } = exists;

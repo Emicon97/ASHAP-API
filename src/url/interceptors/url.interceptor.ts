@@ -19,12 +19,13 @@ export class UrlInterceptor implements NestInterceptor {
       map(async (data: UrlResponse) => {
         const ctx = context.switchToHttp();
         const user: User = ctx.getRequest().user;
+        const name: string | undefined = ctx.getRequest().body.name;
 
         validateCreated(data, ctx);
 
         if (user) {
           try {
-            await this.userService.addUrl(user, data.id);
+            await this.userService.addUrl(user, { name, url: data.id });
           } catch (error) {
             console.error(error);
             return {

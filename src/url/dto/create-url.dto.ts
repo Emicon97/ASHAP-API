@@ -7,5 +7,10 @@ export class CreateUrlDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
   custom: string;
 }

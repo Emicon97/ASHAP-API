@@ -11,10 +11,14 @@ import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 import { User } from './schemas/user.schema';
 import { QueryFunctions } from 'src/common/types';
 import { UrlData } from './types';
+import { UrlCollectionService } from 'src/url-collection/url-collection.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly urlCollectionService: UrlCollectionService,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -53,7 +57,11 @@ export class UserService {
   }
 
   async addUrl(user: User, url: ObjectId | UrlData) {
-    await user.updateOne({ $addToSet: { urls: url } }, { new: true });
+    const collection = await this.urlCollectionService.getOrCreateCollection(user.id);
+
+    await this.urlCollectionService.addUrlToCollection(collection, url);
+
+    await user.updateOne({ $addToSet: { collections: collection.id } });
   }
 
   remove(id: number) {

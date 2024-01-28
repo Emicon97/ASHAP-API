@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Document, SchemaTypes } from 'mongoose';
 import { safePassword } from 'src/common/utils';
-import { UrlData } from '../types';
+import { UrlCollection, UrlData } from '../types';
 
 @Schema()
 export class User extends Document {
@@ -25,6 +25,11 @@ export class User extends Document {
   @IsBoolean()
   @Prop({ default: true })
   isActive: boolean;
+
+  @IsArray()
+  @ValidateNested()
+  @Prop({ type: [{ type: SchemaTypes.ObjectId }], ref: 'UrlCollection' })
+  collections: UrlCollection[];
 
   @IsArray()
   @ValidateNested()

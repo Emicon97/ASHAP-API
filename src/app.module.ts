@@ -13,7 +13,6 @@ import { AuthModule } from './auth/auth.module';
 import { UrlModule } from './url/url.module';
 import { UserModule } from './user/user.module';
 import { UrlCollectionModule } from './url-collection/url-collection.module';
-import { DataMigrationServiceModule } from './data-migration-service/data-migration-service.module';
 
 @Module({
   imports: [
@@ -55,7 +54,6 @@ import { DataMigrationServiceModule } from './data-migration-service/data-migrat
     UserModule,
     UrlModule,
     UrlCollectionModule,
-    DataMigrationServiceModule,
   ],
   controllers: [AppController],
   providers: [

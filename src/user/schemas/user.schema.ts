@@ -33,10 +33,7 @@ export class User extends Document {
 
   @IsArray()
   @ValidateNested()
-  @Prop({
-    type: [{ name: String, url: { type: SchemaTypes.ObjectId, ref: 'Url' } }],
-    _id: false,
-  })
+  @Prop({ type: [{ name: String, url: { type: SchemaTypes.ObjectId, ref: 'Url' } }] })
   urls: UrlData[];
 
   @Prop({ select: false })

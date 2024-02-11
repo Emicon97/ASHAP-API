@@ -2,9 +2,10 @@ import { MongooseModule, Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsArray, IsIn, IsMongoId, IsString, ValidateNested } from 'class-validator';
 import { Document, SchemaTypes } from 'mongoose';
 
+import { defaults } from '../config/defaults.config';
+import { autoPopulateLead } from 'src/common/utils';
 import { UrlData } from 'src/user/types';
 import { Availability, availability } from '../types';
-import { defaults } from '../config/defaults.config';
 
 @Schema()
 export class UrlCollection extends Document {
@@ -14,10 +15,7 @@ export class UrlCollection extends Document {
 
   @IsArray()
   @ValidateNested()
-  @Prop({
-    type: [{ name: String, url: { type: SchemaTypes.ObjectId, ref: 'Url' } }],
-    _id: false,
-  })
+  @Prop({ type: [{ name: String, url: { type: SchemaTypes.ObjectId, ref: 'Url' } }] })
   urls?: UrlData[];
 
   @IsIn(availability)
@@ -25,7 +23,7 @@ export class UrlCollection extends Document {
   availability: Availability;
 
   @Prop()
-  accessors?: string;
+  allowed?: string[];
 
   @IsMongoId()
   @Prop({ select: false })
@@ -34,11 +32,9 @@ export class UrlCollection extends Document {
 
 const UrlCollectionSchema = SchemaFactory.createForClass(UrlCollection);
 
-const autoPopulateLead = function () {
-  this.populate('urls.url');
-};
+const autoPopulateUrl = autoPopulateLead('urls.url');
 
-UrlCollectionSchema.pre('findOne', autoPopulateLead).pre('find', autoPopulateLead);
+UrlCollectionSchema.pre('findOne', autoPopulateUrl).pre('find', autoPopulateUrl);
 
 export const UrlMongooseModule = MongooseModule.forFeature([
   {

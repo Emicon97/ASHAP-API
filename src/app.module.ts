@@ -6,12 +6,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { checkBlacklistedMiddleware } from './auth/middleware/check-blacklisted.middleware';
 
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UrlModule } from './url/url.module';
 import { UserModule } from './user/user.module';
-import { checkBlacklistedMiddleware } from './auth/middleware/check-blacklisted.middleware';
+import { UrlCollectionModule } from './url-collection/url-collection.module';
+import { DataMigrationServiceModule } from './data-migration-service/data-migration-service.module';
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { checkBlacklistedMiddleware } from './auth/middleware/check-blacklisted.
     AuthModule,
     UserModule,
     UrlModule,
+    UrlCollectionModule,
+    DataMigrationServiceModule,
   ],
   controllers: [AppController],
   providers: [

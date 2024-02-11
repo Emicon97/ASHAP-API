@@ -61,6 +61,7 @@ export class UrlController {
       return { url: longLink };
     } catch (error) {
       if (error instanceof TypeError) throw new NotFoundException();
+      console.log(error);
     }
   }
 

@@ -45,7 +45,7 @@ export class UserService {
         .populate(queryFunctions?.populate)
         .exec();
 
-      return user.toObject();
+      if (user) return user.toObject();
     } catch (error) {
       if (error.path)
         throw new BadRequestException(`Property ${error.path} does not exist.`);

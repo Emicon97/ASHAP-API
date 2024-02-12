@@ -1,10 +1,6 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateUrlCollectionDto {
   @IsString()
-  owner: string;
-
-  @IsOptional()
-  @IsString()
-  name?: string;
+  name: string;
 }

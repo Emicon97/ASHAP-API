@@ -5,13 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, ObjectId } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 import { User } from './schemas/user.schema';
 import { QueryFunctions } from 'src/common/types';
 import { UrlData } from './types';
 import { UrlCollectionService } from 'src/url-collection/url-collection.service';
+import { UrlCollection } from 'src/url-collection/schemas/url-colllection.schema';
+import { defaults } from 'src/url-collection/config/defaults.config';
 
 @Injectable()
 export class UserService {
@@ -56,15 +58,21 @@ export class UserService {
     }
   }
 
-  async addUrl(user: User, url: ObjectId | UrlData, collectionName: string) {
-    const collection = await this.urlCollectionService.getOrCreateCollection(
-      user.id,
-      collectionName,
-    );
+  async addUrl(user: User, url: UrlData, collectionName = defaults.NAME) {
+    const collection = await this.getOrCreateCollection(user.id, collectionName);
 
     await this.urlCollectionService.addUrlToCollection(collection, url);
-
     await user.updateOne({ $addToSet: { collections: collection.id } });
+  }
+
+  async getOrCreateCollection(id: string, name: string): Promise<UrlCollection> {
+    const { collections }: User = await this.userModel
+      .findById(id)
+      .populate({ path: 'collections', match: { name } });
+
+    if (!collections.length) return await this.urlCollectionService.create({ name });
+
+    return collections[0];
   }
 
   remove(id: number) {

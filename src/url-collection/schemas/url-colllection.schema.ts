@@ -24,10 +24,6 @@ export class UrlCollection extends Document {
 
   @Prop()
   allowed?: string[];
-
-  @IsMongoId()
-  @Prop({ select: false })
-  owner: string;
 }
 
 const UrlCollectionSchema = SchemaFactory.createForClass(UrlCollection);

@@ -9,7 +9,8 @@ import {
 } from 'class-validator';
 import { Document, SchemaTypes } from 'mongoose';
 import { safePassword } from 'src/common/utils';
-import { UrlCollection, UrlData } from '../types';
+import { UrlData } from '../types';
+import { UrlCollection } from 'src/url-collection/schemas/url-colllection.schema';
 
 @Schema()
 export class User extends Document {

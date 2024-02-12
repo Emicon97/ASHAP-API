@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import { Model } from 'mongoose';
 
-import { defaults } from './config/defaults.config';
 import { CreateUrlCollectionDto } from './dto/create-url-collection.dto';
 import { UrlCollection } from './schemas/url-colllection.schema';
 import { UrlData } from 'src/user/types';
@@ -18,18 +17,12 @@ export class UrlCollectionService {
     return await this.urlCollectionModel.create(createUrlCollectionDto);
   }
 
-  async getOrCreateCollection(owner: string, name?: string) {
-    const collection: UrlCollection = await this.urlCollectionModel.findOne({
-      owner,
-      name: name || defaults.NAME,
-    });
+  async addUrlToCollection(collection: UrlCollection, url: UrlData) {
+    const repeated = collection.urls.find(
+      (e) => e.url.id === url.url && e.name === url.name,
+    );
 
-    if (collection) return collection;
-
-    return await this.create({ owner, name });
-  }
-
-  async addUrlToCollection(collection: UrlCollection, url: ObjectId | UrlData) {
+    if (repeated) return;
     await collection.updateOne({
       $addToSet: { urls: url },
     });

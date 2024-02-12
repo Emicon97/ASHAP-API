@@ -56,8 +56,11 @@ export class UserService {
     }
   }
 
-  async addUrl(user: User, url: ObjectId | UrlData) {
-    const collection = await this.urlCollectionService.getOrCreateCollection(user.id);
+  async addUrl(user: User, url: ObjectId | UrlData, collectionName: string) {
+    const collection = await this.urlCollectionService.getOrCreateCollection(
+      user.id,
+      collectionName,
+    );
 
     await this.urlCollectionService.addUrlToCollection(collection, url);
 

@@ -13,4 +13,9 @@ export class CreateUrlDto {
   @IsNotEmpty()
   @IsString()
   custom: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  collection: string;
 }

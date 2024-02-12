@@ -3,9 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 
-import { CreateUrlDto } from './dto/create-url.dto';
 import { Url } from './schemas/url.schema';
-import { UrlResponse } from './types/url-response.type';
+import { UrlRequest, UrlResponse } from './types';
 
 @Injectable()
 export class UrlService {
@@ -18,7 +17,7 @@ export class UrlService {
     this.url = this.configService.get<string>('ASHAP');
   }
 
-  async create({ longLink, custom }: CreateUrlDto, hash: string): Promise<UrlResponse> {
+  async create({ longLink, custom }: UrlRequest, hash: string): Promise<UrlResponse> {
     const shortLink = new URL(`${custom || ''}/${hash}`, this.url);
 
     try {

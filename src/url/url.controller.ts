@@ -13,11 +13,10 @@ import {
 } from '@nestjs/common';
 
 import { UrlService } from './url.service';
-import { CreateUrlDto } from './dto/create-url.dto';
 import { KeyService } from 'src/common/key.service';
-import { UrlResponse } from './types/url-response.type';
 import { UrlInterceptor } from './interceptors/url.interceptor';
 import { OptionalUserGuard } from 'src/auth/guards/optional-user.guard';
+import { UrlRequest, UrlResponse } from './types';
 
 @Controller()
 export class UrlController {
@@ -29,9 +28,8 @@ export class UrlController {
   @UseInterceptors(UrlInterceptor)
   @UseGuards(OptionalUserGuard)
   @Post('url')
-  async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponse> {
+  async create(@Body() createUrlDto: UrlRequest): Promise<UrlResponse> {
     try {
-      delete createUrlDto.name;
       const exists = await this.urlService.findOne(createUrlDto);
       if (exists) {
         const { id, shortLink } = exists;

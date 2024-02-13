@@ -37,10 +37,6 @@ export class UserService {
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
   async findOne(query: FilterQuery<User>, queryFunctions?: QueryFunctions<User>) {
     try {
       const user = await this.userModel

@@ -23,11 +23,6 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   findOne(@Param('id') _id: string, @Query() userQueries: UserQueriesDto) {

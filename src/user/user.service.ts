@@ -65,12 +65,13 @@ export class UserService {
     await user.updateOne({ $addToSet: { collections: collection.id } });
   }
 
-  async getOrCreateCollection(id: string, name: string): Promise<UrlCollection> {
+  async getOrCreateCollection(owner: string, name: string): Promise<UrlCollection> {
     const { collections }: User = await this.userModel
-      .findById(id)
+      .findById(owner)
       .populate({ path: 'collections', match: { name } });
 
-    if (!collections.length) return await this.urlCollectionService.create({ name });
+    if (!collections.length)
+      return await this.urlCollectionService.create({ name, owner });
 
     return collections[0];
   }

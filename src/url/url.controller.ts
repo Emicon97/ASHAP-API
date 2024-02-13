@@ -16,7 +16,8 @@ import { UrlService } from './url.service';
 import { KeyService } from 'src/common/key.service';
 import { UrlInterceptor } from './interceptors/url.interceptor';
 import { OptionalUserGuard } from 'src/auth/guards/optional-user.guard';
-import { UrlRequest, UrlResponse } from './types';
+import { UrlResponse } from './types';
+import { CreateUrlDto } from './dto/create-url.dto';
 
 @Controller()
 export class UrlController {
@@ -28,7 +29,7 @@ export class UrlController {
   @UseInterceptors(UrlInterceptor)
   @UseGuards(OptionalUserGuard)
   @Post('url')
-  async create(@Body() createUrlDto: UrlRequest): Promise<UrlResponse> {
+  async create(@Body() createUrlDto: CreateUrlDto): Promise<UrlResponse> {
     try {
       const exists = await this.urlService.findOne(createUrlDto);
       if (exists) {

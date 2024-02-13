@@ -7,13 +7,15 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 
+import { QueryFunctions } from 'src/common/types';
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 import { User } from './schemas/user.schema';
-import { QueryFunctions } from 'src/common/types';
 import { UrlData } from './types';
-import { UrlCollectionService } from 'src/url-collection/url-collection.service';
-import { UrlCollection } from 'src/url-collection/schemas/url-colllection.schema';
+
 import { defaults } from 'src/url-collection/config/defaults.config';
+import { CreateUrlCollectionDto } from 'src/url-collection/dto/create-url-collection.dto';
+import { UrlCollection } from 'src/url-collection/schemas/url-colllection.schema';
+import { UrlCollectionService } from 'src/url-collection/url-collection.service';
 
 @Injectable()
 export class UserService {
@@ -58,22 +60,27 @@ export class UserService {
     }
   }
 
-  async addUrl(user: User, url: UrlData, collectionName = defaults.NAME) {
-    const collection = await this.getOrCreateCollection(user.id, collectionName);
+  async addUrl(user: User, url: UrlData, name = defaults.NAME) {
+    const collection = await this.getOrCreateCollection({ owner: user.id, name });
 
     await this.urlCollectionService.addUrlToCollection(collection, url);
-    await user.updateOne({ $addToSet: { collections: collection.id } });
   }
 
-  async getOrCreateCollection(owner: string, name: string): Promise<UrlCollection> {
-    const { collections }: User = await this.userModel
+  async getOrCreateCollection({
+    owner,
+    name,
+  }: CreateUrlCollectionDto): Promise<UrlCollection> {
+    const user: User = await this.userModel
       .findById(owner)
       .populate({ path: 'collections', match: { name } });
 
-    if (!collections.length)
-      return await this.urlCollectionService.create({ name, owner });
+    if (!user.collections.length) {
+      const collection = await this.urlCollectionService.create({ name, owner });
+      await user.updateOne({ $addToSet: { collections: collection.id } });
+      return collection;
+    }
 
-    return collections[0];
+    return user.collections[0];
   }
 
   remove(id: number) {

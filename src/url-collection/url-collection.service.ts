@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 
 import { CreateUrlCollectionDto } from './dto/create-url-collection.dto';
 import { UrlCollection } from './schemas/url-colllection.schema';
+import { UrlCollectionDto } from './dto/update-url-collection.dto';
 import { UrlData } from 'src/user/types';
 
 @Injectable()
@@ -25,6 +26,12 @@ export class UrlCollectionService {
     if (repeated) return;
     await collection.updateOne({
       $addToSet: { urls: url },
+    });
+  }
+
+  async update({ _id, ...rest }: Partial<UrlCollectionDto>) {
+    await this.urlCollectionModel.findOneAndUpdate({ _id }, rest, {
+      new: true,
     });
   }
 }

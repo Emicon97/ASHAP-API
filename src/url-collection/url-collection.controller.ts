@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
+  ForbiddenException,
+  Param,
   Patch,
   Post,
   UseGuards,
@@ -14,6 +17,8 @@ import { UserService } from 'src/user/user.service';
 import { UpdateUrlCollectionDto } from './dto/update-url-collection.dto';
 import { UrlCollectionPatchInterceptor } from './interceptors/url-collection-patch.interceptor';
 import { UrlCollectionService } from './url-collection.service';
+import { GetUser } from 'src/auth/decorators';
+import { User } from 'src/user/schemas/user.schema';
 
 @Controller('url-collection')
 export class UrlCollectionController {
@@ -38,5 +43,17 @@ export class UrlCollectionController {
     );
 
     return 'Ok';
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  async delete(@GetUser() user: User<string>, @Param('id') id: string) {
+    if (!user.collections.some((e: string) => e.toString() === id)) {
+      throw new ForbiddenException('You have no permission to delete this collection.');
+    }
+
+    const collections = user.collections.filter((e) => e.toString() !== id);
+    await this.userService.update(user, { collections });
+    return await this.urlCollectionService.delete(id);
   }
 }

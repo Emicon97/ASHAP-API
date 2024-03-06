@@ -34,4 +34,8 @@ export class UrlCollectionService {
       new: true,
     });
   }
+
+  async delete(_id: string) {
+    return await this.urlCollectionModel.findOneAndDelete({ _id });
+  }
 }

@@ -56,6 +56,10 @@ export class UserService {
     }
   }
 
+  async update(user: User<string>, data: Partial<User<string>>) {
+    return await user.updateOne(data);
+  }
+
   async addUrl(user: User, url: UrlData, name = defaults.NAME) {
     const collection = await this.getOrCreateCollection({ owner: user.id, name });
 

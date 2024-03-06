@@ -12,7 +12,7 @@ import { safePassword } from 'src/common/utils';
 import { UrlCollection } from 'src/url-collection/schemas/url-colllection.schema';
 
 @Schema()
-export class User extends Document {
+export class User<T = UrlCollection> extends Document {
   @IsEmail()
   @Prop({ unique: true, set: (s: string) => s.toLowerCase().trim() })
   email: string;
@@ -29,7 +29,7 @@ export class User extends Document {
   @IsArray()
   @ValidateNested()
   @Prop({ type: [{ type: SchemaTypes.ObjectId }], ref: 'UrlCollection' })
-  collections: UrlCollection[];
+  collections: T[];
 
   @Prop({ select: false })
   __v?: number;

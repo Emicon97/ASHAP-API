@@ -54,6 +54,8 @@ export class UrlCollectionController {
 
     const collections = user.collections.filter((e) => e.toString() !== id);
     await this.userService.update(user, { collections });
-    return await this.urlCollectionService.delete(id);
+    await this.urlCollectionService.delete(id);
+
+    return 'Ok';
   }
 }
